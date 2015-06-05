@@ -3,6 +3,7 @@
 #include "../master/master.h"
 #include "../device/ds18b20.h"
 #include "../device/ds18s20.h"
+#include "../device/ds1961.h"
 #include "../device/ds2408.h"
 #include "../device/unsupported.h"
 #include "../shared/util.h"
@@ -106,6 +107,7 @@ Device* Controller::NewDevice(Bus* bus, uint64_t intDeviceId, std::string* strDe
 		case 0x10 : return new Ds18s20(bus, intDeviceId, strDeviceId);
 		case 0x28 : return new Ds18b20(bus, intDeviceId, strDeviceId);
 		case 0x29 : return new Ds2408(bus, intDeviceId, strDeviceId);
+		case 0x33 : return new Ds1961(bus, intDeviceId, strDeviceId);
 		default	  : return new Unsupported(bus,  intDeviceId, strDeviceId);
 	}
 }

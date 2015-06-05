@@ -87,7 +87,7 @@ class Device {
 	void RegisterUpdater(std::function<bool(const char*)>, const char*, const char*);
 	void RegisterOverdriveUpdater(void);
 
-	uint8_t data[32];
+	uint8_t data[40];
 	uint8_t propCache[4];
 
 
