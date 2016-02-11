@@ -1,17 +1,18 @@
 ## Synopsis
 
-NodeJS addon for simple usage of 1wire over I2C and DS2482-100/800 master. Multiple masters and overdrive speed is supported. Target OS is LINUX with I2C module loaded. Currently only tested on Rasberry PI. The following devices are supported:
+NodeJS addon for simple usage of 1wire over I2C and DS2482-100/800 master. Multiple masters and overdrive speed is supported. Target OS is LINUX with I2C module loaded. Currently only tested on Rasberry Pi and Beagle Bone Black. The following devices are supported:
 
 - DS18S20
 - DS18B20
 - DS2408
+- DS1961
 
 
 ## Prerequisites
 ### Kernel modules
-On Rasberry Pi the following steps load the required modules: 
-- Comment out <b>i2c-dev</b> and <b>i2c-bcm2708</b> inside /etc/modprobe.d/raspi-blacklist.conf 
-- Add to <b>/etc/modules</b> i2c-dev 
+On Rasberry Pi the following steps load the required modules:
+- Comment out <b>i2c-dev</b> and <b>i2c-bcm2708</b> inside /etc/modprobe.d/raspi-blacklist.conf
+- Add to <b>/etc/modules</b> i2c-dev
 - Add to <b>/etc/modules</b> i2c-bcm2708
 - Reboot your system
 
@@ -23,7 +24,7 @@ Using <b>i2cdetect</b>, the addresses of all DS2482 should be shown:
 
 
 ## Install the package
-Because the package is written in C++, it has to be compiled first. This requires to install:  
+Because the package is written in C++, it has to be compiled first. This requires to install:
  - node-gyp (npm install -g node-gyp)
  - python (v2.7 recommended)
  - make
@@ -94,14 +95,14 @@ Moreover, you can define multiple devices for read. Internally, this is performa
 
 ```js
 w1.readDevicesById({
-   fields   :['values', 'properties'], 
+   fields   :['values', 'properties'],
    deviceIds:['104C3D7101080061', '28E445AA040000FC', '29AD5712000000CE']
 )}
 ```
 This returns:
 
 ```js
-{ 
+{
   '104C3D7101080061': //DS18S20
    { ioSpeed	 : 'standard',
      resolution	 : '12bit',
@@ -131,13 +132,13 @@ In the result above, the temperature is "85.0". This is quite hot :-) To read th
 
 ```js
 w1.broadcastBusCommand({
-	masterName : 'MASTER1', 
-	busNumber  : 0, 
+	masterName : 'MASTER1',
+	busNumber  : 0,
 	command    : "convertTemperature"
-})     
+})
 ```
 
-After the command is send, all devices on the specified Master/Bus start to build a memory entry with the current temperature. After a delay, the correct temperature can be read. The delays are different for each device and resolution. Details are shown below in the device section. 
+After the command is send, all devices on the specified Master/Bus start to build a memory entry with the current temperature. After a delay, the correct temperature can be read. The delays are different for each device and resolution. Details are shown below in the device section.
 
 
 ## Update devices
@@ -151,12 +152,12 @@ w1.updateDeviceById({deviceId:'DEVICEID', set:'KEY', value:'VALUE'})
 ## DS18S20 and DS18B20
 ### Read returns
 
-```js 	
-{ 
+```js
+{
   ioSpeed	  : 'standard', //property
   resolution  : '12bit',    //property
   powerSupply : true,       //property
-  tCelsius	  : '85.0'  	 //value   
+  tCelsius	  : '85.0'  	 //value
 }
 ```
 
@@ -170,7 +171,7 @@ w1.updateDeviceById({deviceId:'DEVICEID', set:'resolution', value:'11bit'})
 w1.updateDeviceById({deviceId:'DEVICEID', set:'resolution', value:'12bit'})
 ```
 
-A higher resolution will return you more decimal values. For the DS18S20 the decimals are interpolated. The possible decimals are: 
+A higher resolution will return you more decimal values. For the DS18S20 the decimals are interpolated. The possible decimals are:
 
 ```js
 {
@@ -197,10 +198,10 @@ The calculation delays are:
 ### Read returns
 
 ```js
-{ 	
+{
 	ioSpeed     : 'standard',   //property
     rstzPinMode : 'resetInput', //property
-    powerSupply : true,         //property  
+    powerSupply : true,         //property
     pioInput    : { hex: '0x1f', decimal: 31,  binary: '00011111' },  //value
     pioOutput   : { hex: '0xff', decimal: 255, binary: '11111111' },  //value
     pioActivity : { hex: '0x00', decimal: 0,   binary: '00000000' }   //value
@@ -257,7 +258,7 @@ w1.updateDeviceById({deviceId:"28E445AA040000FC", set:'resolution', value:'12bit
 //broadcast
 w1.broadcastBusCommand({masterName:'MASTER1', busNumber:0, command:"convertTemperature"})
 
-//Read after 750ms in 12bit. During the 750ms other devices could be read. 
+//Read after 750ms in 12bit. During the 750ms other devices could be read.
 setTimeout(function() {
   result = w1.readDevicesById({fields:['values'], deviceIds:['28E445AA040000FC']})
   console.log(result)
